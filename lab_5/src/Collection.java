@@ -10,12 +10,16 @@ import java.util.Scanner;
  * Главный класс
  */
 public class Collection {
-
+    /**
+     * Метод main
+     *
+     * @param args необходимо передать путь к файлу сохранения, для корректной работы прописывайте полный путь
+     */
     public static void main(String[] args) {
         ZonedDateTime first_date = ZonedDateTime.now();
         Scanner scanner = new Scanner(System.in);
         HashSet<Ticket> tickets = new HashSet<>();
-        String path  = args[0].trim();
+        String path = args[0].trim();
         try {
             Scanner file_scanner = new Scanner(new File(path));
             first_date = ZonedDateTime.parse(file_scanner.nextLine());

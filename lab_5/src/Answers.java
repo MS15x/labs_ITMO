@@ -552,7 +552,7 @@ abstract class Answers {
     private static void get_users_price(Ticket ticket) {
         String input;
         while (true) {
-            System.out.print("Введите стоимость билета (целое число): ");
+            System.out.print("Введите стоимость билета (целое положительное число не более 2147483647): ");
             input = scanner.nextLine().trim();
             if (Check.checkInt(input)) {
                 if (Integer.parseInt(input) > 0) {
@@ -567,7 +567,7 @@ abstract class Answers {
     private static void get_users_y(Ticket ticket) {
         String input;
         while (true) {
-            System.out.print("Введите координату Y (целое число): ");
+            System.out.print("Введите координату Y (целое число от -9223372036854775808 до 9223372036854775807): ");
             input = scanner.nextLine();
             if (Check.checkLong(input)) {
                 ticket.getCoordinates().setY(Long.parseLong(input));
@@ -580,7 +580,7 @@ abstract class Answers {
     private static void get_users_x(Ticket ticket) {
         String input;
         while (true) {
-            System.out.print("Введите координату X (число с плавающей точкой): ");
+            System.out.print("Введите координату X (число с плавающей точкой, ВНИМАНИЕ, числа имеющие более 7 цифр могут сохраниться некорректно): ");
             input = scanner.nextLine().trim();
             if (Check.checkFloat(input)) {
                 ticket.getCoordinates().setX(Float.parseFloat(input));
