@@ -46,7 +46,6 @@ class Event {
 
     EventType getType() {
         return eventType;
-        //return eventType == null ? "" : String.valueOf(eventType);
     }
 
     private static long j;
