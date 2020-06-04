@@ -15,8 +15,8 @@ public class Client {
 
     public static void main(String[] args) {
         try {
-            int port = 6661;
-            String hostname = "localhost";
+            int port = Integer.parseInt(args[1]);
+            String hostname = args[0].trim();
             Scanner scanner = new Scanner(System.in);
             address = new InetSocketAddress(hostname, port);
             socket = new DatagramSocket();

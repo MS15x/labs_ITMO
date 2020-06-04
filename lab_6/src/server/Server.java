@@ -22,7 +22,7 @@ public class Server {
         ArrayList<Ticket> tickets = new ArrayList<>();
         ZonedDateTime first_date;
         try {
-            int port = 6661;
+            int port = Integer.parseInt(args[0]);
             SocketAddress address = new InetSocketAddress(port);
             DatagramChannel channel = DatagramChannel.open();
             channel.bind(address);
