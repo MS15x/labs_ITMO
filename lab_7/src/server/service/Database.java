@@ -18,8 +18,8 @@ import java.util.logging.Logger;
 public abstract class Database {
     private static final Logger logger = Logger.getLogger(Database.class.getName());
     private static final String url = "jdbc:postgresql://localhost:5432/postgres";
-    private static final String user = "postgres";
-    private static final String password = "vaksa";
+    private static final String user = "";
+    private static final String password = "";
     private static Connection connection;
     private static Statement statement;
 
