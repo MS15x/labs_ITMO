@@ -1,6 +1,7 @@
 package lab_8.client;
 
 import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -10,18 +11,24 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -33,15 +40,19 @@ import lab_8.common.ticket.TicketType;
 
 public class MainController {
 
+    private HashMap<String, Color> colors = new HashMap<>();
+
     private ObservableList<TicketView> tickets = FXCollections.observableArrayList();
     @FXML
     private Button add_button;
     @FXML
     private Label name_label;
     @FXML
-    private Label info_label;
+    public Label info_label;
     @FXML
     private TableView<TicketView> ticket_table;
+    @FXML
+    private Canvas main_canvas;
 
     @FXML
     private void addButtonClick() throws IOException {
@@ -68,12 +79,16 @@ public class MainController {
 
     @FXML
     private void initialize() {
+
         ArrayList<String> serverTable = Client.connect(new ServerCommand(AllCommands.show)).getInformation();
         serverTable.remove(0);
         for (int i = 0; i < serverTable.size() / 11; i++)
             tickets.add(new TicketView(serverTable.subList(i * 11, (i + 1) * 11)));
 
+        name_label.setText("Пользователь: " + ClientMain.getUser().getUser());
         table_creation();
+        draw();
+
         Timeline timeline = new Timeline(new KeyFrame(
                 Duration.millis(2000),
                 ae -> {
@@ -85,6 +100,59 @@ public class MainController {
         timeline.play();
     }
 
+    double x_max, y_max, x_min, y_min;
+
+    public void draw() {
+        double delta = 50;
+        x_max = tickets.stream().map(a -> Double.valueOf(a.getTicketX())).max(Double::compareTo).get();
+        y_max = tickets.stream().map(a -> Double.valueOf(a.getTicketY())).max(Double::compareTo).get();
+        x_min = tickets.stream().map(a -> Double.valueOf(a.getTicketX())).min(Double::compareTo).get();
+        y_min = tickets.stream().map(a -> Double.valueOf(a.getTicketY())).min(Double::compareTo).get();
+        main_canvas.setWidth(x_max - x_min + delta);
+        main_canvas.setHeight(y_max - y_min + delta);
+        for (TicketView t : tickets)
+            colors.put(t.getUserName(), random_color());
+        GraphicsContext gc = main_canvas.getGraphicsContext2D();
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0, 0, main_canvas.getWidth(), main_canvas.getHeight());
+        for (TicketView ticket : tickets) {
+            ticket.setColor(colors.get(ticket.getUserName()));
+        //    ticket.draw(gc);
+        }
+
+        gc.translate(-x_min, -y_min);
+        AnimationTimer animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                double x_min_e = tickets.stream().map(a -> Double.valueOf(a.getTicketX())).min(Double::compareTo).get(),
+                        y_min_e = tickets.stream().map(a -> Double.valueOf(a.getTicketY())).min(Double::compareTo).get();
+                gc.translate(x_min - x_min_e, y_min - y_min_e);
+                x_min = x_min_e;
+                y_min = y_min_e;
+                gc.clearRect(x_min, y_min, x_max - x_min + delta, y_max - y_min + delta);
+                for (TicketView ticket : tickets) {
+                    ticket.update(now);
+                    if (Double.parseDouble(ticket.getTicketX()) > x_max) {
+                        x_max = Double.parseDouble(ticket.getTicketX());
+                        main_canvas.setWidth(x_max - x_min + delta);
+                    }
+                    if (Double.parseDouble(ticket.getTicketY()) > y_max) {
+                        main_canvas.setHeight(y_max - y_min + delta);
+                        y_max = Double.parseDouble(ticket.getTicketY());
+                    }
+                    ticket.draw(gc);
+                }
+            }
+        };
+        animationTimer.start();
+    }
+
+    private Color random_color() {
+        Random rand = new Random();
+        return Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
+    }
+
+    //////////////////////////////////////
     public void table_update(ServerCommand command) {
         ArrayList<String> serverInfo = command.getInformation();
         if (serverInfo.get(0) != null)
@@ -121,6 +189,8 @@ public class MainController {
                         break;
                     case 8:
                         ticket.setEventName(command.getInformation().get(2));
+                        ticket.setEventType(command.getInformation().get(3));
+                        ticket.setEventDate(command.getInformation().get(4));
                         break;
                     case 9:
                         ticket.setEventType(command.getInformation().get(2));
@@ -132,7 +202,6 @@ public class MainController {
     }
 
     private void table_creation() {
-        name_label.setText("Пользователь: " + ClientMain.getUser().getUser());
         TableColumn<TicketView, String> userNameCol = new TableColumn<>("Пользователь");
         TableColumn<TicketView, String> ticketDateCol = new TableColumn<>("Дата");
         TableColumn<TicketView, String> ticketCol = new TableColumn<>("Билет");
@@ -162,11 +231,9 @@ public class MainController {
         eventDateCol.setMinWidth(60);
 
         userNameCol.setCellValueFactory(new PropertyValueFactory<>("userName"));
-        //eventNameCol.setCellValueFactory(new PropertyValueFactory<>("eventName"));
         eventDateCol.setCellValueFactory(new PropertyValueFactory<>("eventDate"));
 
         ticket_table.setItems(tickets);
-
     }
 
     private void eventNameEdit(TableColumn<TicketView, String> eventNameCol) {
@@ -193,6 +260,9 @@ public class MainController {
         eventNameCol.setOnEditCommit((TableColumn.CellEditEvent<TicketView, String> editEvent) -> {
             String newType = editEvent.getNewValue();
             TicketView person = editEvent.getTableView().getItems().get(editEvent.getTablePosition().getRow());
+            //
+            editEvent.getTableView().refresh();
+            //
             table_update(Client.connect(new ServerCommand(AllCommands.update, person.getId(), "8", newType)));
         });
     }
@@ -481,11 +551,13 @@ public class MainController {
                         if (row != null & !empty & item != null) {
                             TicketView arg0 = (TicketView) row.getItem();
                             if (arg0 == null || arg0.getEventName().equals("")) {
-                                setEditable(false);
-                                setVisible(false);
+                                //setEditable(false);
+                                //setDisable(true);
+                                //setVisible(false);
                             } else {
-                                setEditable(true);
-                                setVisible(true);
+                                // setEditable(true);
+                                // setDisable(false);
+                                // setVisible(true);
                             }
                         }
                         super.updateItem(item, empty);
@@ -495,7 +567,11 @@ public class MainController {
                     public void startEdit() {
                         TableRow row = getTableRow();
                         if (row != null && ((TicketView) row.getItem()).getUserName().equals(ClientMain.getUser().getUser()))
-                            super.startEdit();
+                            if (!((TicketView) row.getItem()).getEventName().equals("")) {
+                                setVisible(true);
+                                super.startEdit();
+                            } else
+                                setVisible(false);
                     }
                 };
             }

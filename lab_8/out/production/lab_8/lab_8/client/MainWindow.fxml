@@ -2,6 +2,7 @@
 
 <?import java.lang.*?>
 <?import javafx.collections.*?>
+<?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -11,13 +12,16 @@
     </columnConstraints>
     <rowConstraints>
         <RowConstraints maxHeight="-Infinity" minHeight="0.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="211.0" minHeight="10.0" prefHeight="198.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="288.0" minHeight="10.0" prefHeight="158.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="211.0" minHeight="10.0" prefHeight="138.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="288.0" minHeight="10.0" prefHeight="208.0" vgrow="SOMETIMES" />
       <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
     <Label fx:id="name_label" prefHeight="20.0" prefWidth="429.0" text="Пользователь:" />
-    <SplitPane dividerPositions="0.6418918918918919" prefHeight="160.0" prefWidth="200.0" GridPane.rowIndex="2">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="209.0" prefWidth="380.0" />
+    <SplitPane dividerPositions="0.7195945945945946" prefHeight="160.0" prefWidth="200.0" GridPane.rowIndex="2">
+      <ScrollPane prefHeight="200.0" prefWidth="200.0">
+         <content>
+            <Canvas fx:id="main_canvas" height="200.0" width="424.0" />
+         </content></ScrollPane>
         <GridPane>
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" />
@@ -48,6 +52,6 @@
             <Button mnemonicParsing="false" text="Button" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         </GridPane>
     </SplitPane>
-    <TableView fx:id="ticket_table" editable="true" prefHeight="71.0" prefWidth="594.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+    <TableView fx:id="ticket_table" editable="true" prefHeight="140.0" prefWidth="594.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
    <Label fx:id="info_label" textFill="RED" GridPane.rowIndex="3" />
 </GridPane>
