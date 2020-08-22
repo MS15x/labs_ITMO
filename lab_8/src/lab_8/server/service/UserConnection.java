@@ -6,7 +6,7 @@ import lab_8.common.ServerCommand;
 import java.sql.*;
 
 /**
- * Класс реализует систему входа в систему со стороны сервера
+ * Класс реализует систему регистрации и авторизации со стороны сервера
  */
 public abstract class UserConnection {
     private static final String url = "jdbc:postgresql://localhost:5432/postgres";//"jdbc:postgresql://pg:5432/studs";
@@ -37,23 +37,10 @@ public abstract class UserConnection {
                     if (resultSet.getString(2).equals(PassHash.hash(command.getPassword())))
                         return new ServerCommand(AllCommands.check, true);
                     else
-                        return new ServerCommand(AllCommands.check, false, "Пароль введён неверно");
-            return new ServerCommand(AllCommands.check, false, "Пользователя с таким именем не зарегистировано");
-
-            /*if (command.getPassword() == null) {
-                while (resultSet.next())
-                    if (resultSet.getString(1).equals(command.getUser()))
-                        return new ServerCommand(AllCommands.check, true);
-                return new ServerCommand(AllCommands.check, false, "Пользователя с таким именем не зарегистировано");
-            } else {
-                while (resultSet.next())
-                    if (resultSet.getString(1).equals(command.getUser()) &
-                            resultSet.getString(2).equals(PassHash.hash(command.getPassword())))
-                        return new ServerCommand(AllCommands.check, true);
-                return new ServerCommand(AllCommands.check, false, "Пароль введён неверно");
-            }*/
+                        return new ServerCommand(AllCommands.check, false, "Ans-201");
+            return new ServerCommand(AllCommands.check, false, "Ans-202");
         } catch (Exception e) {
-            return new ServerCommand(AllCommands.check, false, "Произошла ошибка на стороне сервера");
+            return new ServerCommand(AllCommands.check, false, "Ans-203");
         }
     }
 
@@ -68,14 +55,14 @@ public abstract class UserConnection {
             connect();
             while (resultSet.next())
                 if (resultSet.getString(1).equals(command.getUser()))
-                    return new ServerCommand(AllCommands.registration, false, "Пользователь с таким именем уже зарегистирован");
+                    return new ServerCommand(AllCommands.registration, false, "Ans-204");
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO users(users,password) VALUES (?,?)");
             preparedStatement.setString(1, command.getUser());
             preparedStatement.setString(2, PassHash.hash(command.getPassword()));
             preparedStatement.executeUpdate();
-            return new ServerCommand(AllCommands.registration, true, "Пользователь был успешно зарегистрирован");
+            return new ServerCommand(AllCommands.registration, true, "Ans-205");
         } catch (Exception e) {
-            return new ServerCommand(AllCommands.check, false, "Произошла ошибка на стороне сервера");
+            return new ServerCommand(AllCommands.check, false, "Ans-203");
         }
     }
 }

@@ -21,9 +21,9 @@ import java.util.logging.Logger;
  */
 public class Server {
 
-    private static ExecutorService executor_in = Executors.newFixedThreadPool(4);
-    private static ExecutorService executor_here = Executors.newCachedThreadPool();
-    private static ExecutorService executor_out = Executors.newWorkStealingPool();
+    private static ExecutorService executor_in = Executors.newFixedThreadPool(4),
+            executor_here = Executors.newCachedThreadPool(),
+            executor_out = Executors.newWorkStealingPool();
     private static final Logger logger = Logger.getLogger(Server.class.getName());
 
     public static void main(String[] args) {
@@ -85,12 +85,8 @@ public class Server {
                     ByteBuffer buffer = ByteBuffer.wrap(buffer_to_zero);
                     address = channel.receive(buffer);
 
-                    if (address != null) {
-                        //if (!allAddresses.contains(address))
-                           // allAddresses.put(,address);
-                        //logger.info(allAddresses.toString());
+                    if (address != null)
                         executor_in.execute(new ServerIn(new ThreadInfo(address, allAddresses, channel, tickets, first_date), buffer, executor_here, executor_out));
-                    }
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Сервер упал", e);

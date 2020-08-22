@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane fx:id="main_grid" prefWidth="264.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lab_8.client.AuthorisationController">
+<GridPane fx:id="main_grid" prefWidth="264.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lab_8.client.windows.AuthorisationController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" />
     </columnConstraints>
@@ -21,7 +19,7 @@
         <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
     </rowConstraints>
     <Label fx:id="user_label" text="Имя пользователя" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-    <Label text="Пароль" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+    <Label fx:id="pass_label" text="Пароль" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
     <PasswordField fx:id="pass_field" GridPane.rowIndex="3" />
     <TextField fx:id="name_field" GridPane.rowIndex="1" />
     <GridPane prefHeight="1.0" prefWidth="149.0" GridPane.rowIndex="8">
@@ -32,13 +30,7 @@
         <rowConstraints>
             <RowConstraints vgrow="SOMETIMES" />
         </rowConstraints>
-        <ComboBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="28.0" prefWidth="40.0" promptText="Русский" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="English" />
-                </FXCollections>
-            </items>
-        </ComboBox>
+        <ComboBox fx:id="language_box" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="28.0" prefWidth="40.0" promptText="Русский" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
         <Button fx:id="registry_button" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onNewClickMethod" text="Зарегистрироваться" textAlignment="CENTER" GridPane.halignment="CENTER" />
     </GridPane>
     <Button fx:id="enter_button" mnemonicParsing="false" onAction="#onEnterClickMethod" prefWidth="78.0" text="Ввод" GridPane.halignment="CENTER" GridPane.rowIndex="7" GridPane.valignment="CENTER" />

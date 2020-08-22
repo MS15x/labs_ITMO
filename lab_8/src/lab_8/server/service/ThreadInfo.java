@@ -14,7 +14,7 @@ import java.util.HashSet;
  */
 public class ThreadInfo {
     public SocketAddress address;
-    public HashMap<String,SocketAddress> allAddresses;
+    public HashMap<String, SocketAddress> allAddresses;
     public DatagramChannel channel;
     public ArrayList<Ticket> tickets;
     public ZonedDateTime first_date;

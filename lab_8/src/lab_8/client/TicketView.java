@@ -8,42 +8,28 @@ import java.util.List;
 
 import static java.lang.Math.*;
 
+/**
+ * Содержит данные, необходимые для отображения билета в таблице и графическом поле
+ */
 public class TicketView {
+    private static double x_min = 10000000, y_min = 10000000,
+            x_max = -10000000, y_max = -10000000;
     private Color color;
-    private double r;
-    private double x;
-    private double y;
-    private double r_new;
-    private double x_new;
-    private double y_new;
-    private double x_last;
-    private double y_last;
-    private double v;
-    private double t;
-    private double t_last;
-    private int i;
+    private double r, x, y, r_new, x_new, y_new,
+            x_last, y_last, v, t_last, t_last_r;
 
     private String id;
-    private SimpleStringProperty userName,
-            ticketDate,
-            ticketName,
-            ticketX,
-            ticketY,
-            ticketPrice,
-            ticketType,
-            eventName,
-            eventType,
-            eventDate;
+    private SimpleStringProperty userName, ticketDate,
+            ticketName, ticketX, ticketY, ticketPrice,
+            ticketType, eventName, eventType, eventDate;
 
+    /**
+     * Обновление данных, необходимых для прорисовки элемента на канве
+     *
+     * @param now время в наносекундах
+     */
     public void update(long now) {
-        //x_new = Double.parseDouble(ticketX.get());
-        //y_new = Double.parseDouble(ticketY.get());
-        //r_new = Double.parseDouble(ticketPrice.get());
-
-        t = ((double) now) / 1000000000;
-        // if (//sqrt(pow(x_new - x, 2) + pow(y_new - y, 2)) > 2 &&
-        //         x_new == Double.parseDouble(ticketX.get()) &&
-        //                 y_new == Double.parseDouble(ticketY.get())) {
+        double t = ((double) now) / 1000000000;
         if (sqrt(pow(x_new - x, 2) + pow(y_new - y, 2)) > 2) {
             double alpha = atan((y_new - y_last) / (x_new - x_last)),
                     x_new_n = x_new * cos(alpha) + y_new * sin(alpha),
@@ -60,33 +46,38 @@ public class TicketView {
             double x_extra = x;
             x = x * cos(alpha) - y * sin(alpha);
             y = x_extra * sin(alpha) + y * cos(alpha);
-
         } else {
             x = x_new;
             y = y_new;
             v = 0;
         }
-        // } else {
-        //     x_last = x;
-        //     y_last = y;
-        //      v = 0;
-        // }
+        if (abs(r - r_new) > 1) {
+            double vr = 8;
+            r = r + signum(r_new - r) * vr * (t - t_last_r);
+        } else
+            r = r_new;
+        t_last_r = t;
 
         x_new = Double.parseDouble(ticketX.get());
         y_new = Double.parseDouble(ticketY.get());
-        r_new = Double.parseDouble(ticketPrice.get());
+        r_new = log1p(Double.parseDouble(ticketPrice.get()));
     }
 
+    /**
+     * Отрисовка элемента на канве
+     *
+     * @param gc GraphicsContext канвы
+     */
     public void draw(GraphicsContext gc) {
         gc.setFill(color);
-        gc.fillOval(x - r, y - r, 2 * r, 2 * r);
+        gc.fillOval(x - x_min - r, y - y_min - r, 2 * r, 2 * r);
     }
 
     public void setColor(Color color) {
         this.color = color;
     }
 
-    TicketView(List<String> all) {
+    public TicketView(List<String> all) {
         id = all.get(0);
         userName = new SimpleStringProperty(all.get(1));
         ticketDate = new SimpleStringProperty(all.get(2));
@@ -101,7 +92,7 @@ public class TicketView {
 
         x_last = x = Double.parseDouble(ticketX.get());
         y_last = y = Double.parseDouble(ticketY.get());
-        r = Double.parseDouble(ticketPrice.get());
+        r = r_new = log1p(Double.parseDouble(ticketPrice.get()));
     }
 
     public String getId() {
@@ -158,6 +149,7 @@ public class TicketView {
 
     public void setTicketPrice(String ticketPrice) {
         this.ticketPrice.set(ticketPrice);
+        r_new = log1p(Double.parseDouble(this.ticketPrice.get()));
     }
 
     public String getTicketPrice() {
@@ -194,5 +186,33 @@ public class TicketView {
 
     public String getTicketY() {
         return ticketY.get();
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getR() {
+        return r;
+    }
+
+    public static double getX_min() {
+        return x_min;
+    }
+
+    public static double getY_min() {
+        return y_min;
+    }
+
+    public static void setX_min(double x_min) {
+        TicketView.x_min = x_min;
+    }
+
+    public static void setY_min(double y_min) {
+        TicketView.y_min = y_min;
     }
 }

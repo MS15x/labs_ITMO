@@ -3,7 +3,7 @@ package lab_8.client;
 /**
  * Класс реализует проверку чисел на соответствие типу
  */
-public abstract class Check extends TicketCheck {
+public abstract class Check {
     /**
      * Проверяет является ли число типом long
      *
