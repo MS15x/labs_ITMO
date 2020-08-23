@@ -6,6 +6,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -41,9 +42,10 @@ import lab_8.common.ticket.TicketType;
  * Контролёр главного окна
  */
 public class MainController {
-
+    private final double height = 720 + 40, width = 900 + 100;
     private HashMap<String, Color> colors = new HashMap<>();
     private ObservableList<TicketView> tickets = FXCollections.observableArrayList();
+    private double a, b;
 
     @FXML
     private Button clear_button, delete_button, add_button;
@@ -61,6 +63,7 @@ public class MainController {
     private ComboBox<String> language_box;
     private GraphicsContext gc;
     private ResourceFactory rf;
+
 
     @FXML
     private void addButtonClick() throws IOException {
@@ -94,12 +97,27 @@ public class MainController {
         clear_button.textProperty().bind(rf.get("Clear"));
         scale_label.textProperty().bind(rf.get("Scale"));
 
+        ChangeListener<Number> ruler = (observable, oldValue, newValue) -> {
+            a = (canvas_pane.getContent().getBoundsInParent().getHeight() -
+                    canvas_pane.viewportBoundsProperty().get().getHeight()) * canvas_pane.getVvalue();
+            b = (canvas_pane.getContent().getBoundsInParent().getWidth() -
+                    canvas_pane.viewportBoundsProperty().get().getWidth()) * canvas_pane.getHvalue();
+            b = b < 0 ? 0 : b;
+            a = a < 0 ? 0 : a;
+            table_draw(gc);
+        };
+        canvas_pane.vvalueProperty().addListener(ruler);
+        canvas_pane.hvalueProperty().addListener(ruler);
+        canvas_pane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        canvas_pane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+
         gc = main_canvas.getGraphicsContext2D();
         main_canvas.setOnMouseClicked(event -> {
             double eventX = event.getX() / zoom_spinner.getValue(),
                     eventY = event.getY() / zoom_spinner.getValue();
             TicketView clickedTicket = tickets.stream().filter(a ->
-                    Math.pow(a.getX() - eventX, 2) + Math.pow(a.getY() - eventY, 2) <
+                    Math.pow(a.getX() + gc.getCanvas().getWidth() / 2 - eventX, 2) +
+                            Math.pow(a.getY() + gc.getCanvas().getHeight() / 2 - eventY, 2) <
                             Math.pow(a.getR(), 2)).min((a, b) -> {
                         if (Math.pow(a.getX() - eventX, 2) + Math.pow(a.getY() - eventY, 2) <
                                 Math.pow(b.getX() - eventX, 2) + Math.pow(b.getY() - eventY, 2))
@@ -166,16 +184,9 @@ public class MainController {
         });
     }
 
-    private double x_max, y_max, x_min, y_min, delta = 50;
-
     private void draw() {
-        x_max = tickets.stream().map(a -> Double.valueOf(a.getTicketX())).max(Double::compareTo).orElse(0.0);
-        y_max = tickets.stream().map(a -> Double.valueOf(a.getTicketY())).max(Double::compareTo).orElse(0.0);
-        x_min = tickets.stream().map(a -> Double.valueOf(a.getTicketX())).min(Double::compareTo).orElse(0.0);
-        y_min = tickets.stream().map(a -> Double.valueOf(a.getTicketY())).min(Double::compareTo).orElse(0.0);
-
-        main_canvas.setWidth(x_max - x_min + 2 * delta);
-        main_canvas.setHeight(y_max - y_min + 2 * delta);
+        main_canvas.setWidth(width);
+        main_canvas.setHeight(height);
 
         for (TicketView t : tickets) {
             if (!colors.containsKey(t.getUserName()))
@@ -186,35 +197,46 @@ public class MainController {
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                TicketView.setX_min(tickets.stream().map(a -> Double.valueOf(a.getTicketX())).min(Double::compareTo).orElse(0.0) - delta);
-                TicketView.setY_min(tickets.stream().map(a -> Double.valueOf(a.getTicketY())).min(Double::compareTo).orElse(0.0) - delta);
-
                 gc.setTransform(zoom_spinner.getValue(), 0, 0, zoom_spinner.getValue(), 0, 0);
                 table_draw(gc);
 
                 for (TicketView ticket : tickets) {
                     ticket.update(now);
-                    if (Double.parseDouble(ticket.getTicketX()) > x_max)
-                        x_max = Double.parseDouble(ticket.getTicketX());
-                    if (Double.parseDouble(ticket.getTicketY()) > y_max)
-                        y_max = Double.parseDouble(ticket.getTicketY());
                     ticket.draw(gc);
                 }
+                ruler_draw(gc);
             }
         };
         animationTimer.start();
     }
 
+    private void ruler_draw(GraphicsContext gc) {
+        gc.setFill(Color.YELLOW);
+        gc.fillRect(b, a, canvas_pane.getWidth(), 15);
+        gc.setFill(Color.BLACK);
+        for (int i = 50, i1 = -9; i <= width; i += 50, i1++) {
+            gc.strokeLine(i, a, i, a + 15);
+            gc.fillText((i1 < 0 ? "-" : "") + (i1 == 0 ? "0" : (Math.abs(i1) == 1 ? "10" : ("10^" + Math.abs(i1)))), i + 2, a + 12);
+        }
+        gc.setFill(Color.YELLOW);
+        gc.fillRect(b, a, 42, canvas_pane.getHeight());
+        gc.setFill(Color.BLACK);
+        for (int j = 20, j1 = -18; j <= height; j += 20, j1++) {
+            gc.strokeLine(b, j, b + 42, j);
+            gc.fillText((j1 > 0 ? "-" : "") + (j1 == 0 ? "0" : (Math.abs(j1) == 1 ? "10" : ("10^" + Math.abs(j1)))), b, j - 2);
+        }
+        gc.setFill(Color.WHITE);
+        gc.fillRect(b, a, 42, 15);
+    }
+
     private void table_draw(GraphicsContext gc) {
-        gc.clearRect(x_min - delta, y_min - delta,
-                Math.max(canvas_pane.getWidth() + 2 * delta, x_max - x_min + 2 * delta),
-                Math.max(canvas_pane.getHeight() + 2 * delta, y_max - y_min + 2 * delta));
-        main_canvas.setWidth(Math.max(canvas_pane.getWidth() * zoom_spinner.getValue(), x_max - x_min + 2 * delta));
-        main_canvas.setHeight(Math.max(canvas_pane.getHeight() * zoom_spinner.getValue(), y_max - y_min + 2 * delta));
-        for (double i = x_min - delta; i <= Math.max(canvas_pane.getWidth(), x_max + 2 * delta); i += 10)
-            gc.strokeLine(i, y_min - delta, i, Math.max(canvas_pane.getHeight(), y_max + 2 * delta));
-        for (double j = y_min - delta; j <= Math.max(canvas_pane.getHeight(), y_max + 2 * delta); j += 10)
-            gc.strokeLine(x_min - delta, j, Math.max(canvas_pane.getWidth(), x_max + 2 * delta), j);
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0, 0, width, height);
+        gc.setFill(Color.BLACK);
+        for (int j = 20, j1 = -18; j <= height; j += 20, j1++)
+            gc.strokeLine(0, j, width, j);
+        for (int i = 50, i1 = -9; i <= width; i += 50, i1++)
+            gc.strokeLine(i, 0, i, height);
     }
 
     private Color random_color() {
@@ -511,7 +533,8 @@ public class MainController {
         ticketXCol.setOnEditCommit((TableColumn.CellEditEvent<TicketView, String> editEvent) -> {
             String newType = editEvent.getNewValue();
             TicketView person = editEvent.getTableView().getItems().get(editEvent.getTablePosition().getRow());
-            update(ClientConnection.connect(new ServerCommand(AllCommands.update, person.getId(), "4", newType)));
+            if (Check.checkFloat(newType))
+                update(ClientConnection.connect(new ServerCommand(AllCommands.update, person.getId(), "4", newType)));
         });
     }
 
@@ -551,7 +574,8 @@ public class MainController {
         ticketYCol.setOnEditCommit((TableColumn.CellEditEvent<TicketView, String> editEvent) -> {
             String newType = editEvent.getNewValue();
             TicketView person = editEvent.getTableView().getItems().get(editEvent.getTablePosition().getRow());
-            update(ClientConnection.connect(new ServerCommand(AllCommands.update, person.getId(), "5", newType)));
+            if (Check.checkLong(newType))
+                update(ClientConnection.connect(new ServerCommand(AllCommands.update, person.getId(), "5", newType)));
         });
     }
 
@@ -591,7 +615,8 @@ public class MainController {
         ticketPriceCol.setOnEditCommit((TableColumn.CellEditEvent<TicketView, String> editEvent) -> {
             String newType = editEvent.getNewValue();
             TicketView person = editEvent.getTableView().getItems().get(editEvent.getTablePosition().getRow());
-            update(ClientConnection.connect(new ServerCommand(AllCommands.update, person.getId(), "6", newType)));
+            if (Check.checkInt(newType))
+                update(ClientConnection.connect(new ServerCommand(AllCommands.update, person.getId(), "6", newType)));
         });
     }
 

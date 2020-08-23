@@ -48,6 +48,9 @@ public abstract class Database {
                         resultSet.getString(12));
                 all_tickets.add(ticket);
             }
+            statement.close();
+            resultSet.close();
+            connection.close();
         } catch (SQLException | ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Не удалось загрузить базу данных", e);
             return null;
@@ -101,6 +104,9 @@ public abstract class Database {
                 preparedStatement.setString(12, ticket.getUser());
                 preparedStatement.executeUpdate();
             }
+            statement.close();
+            preparedStatement.close();
+            connection.close();
             logger.info("База данных сохранена");
         } catch (SQLException | ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Не удалось сохранить базу данных", e);

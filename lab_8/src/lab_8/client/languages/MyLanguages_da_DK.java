@@ -23,8 +23,8 @@ public class MyLanguages_da_DK extends ListResourceBundle {
                 {"Ans-204", "Bruger med dette navn er allerede registreret"},
                 {"Ans-205", "Brugeren blev registreret med succes"},
                 {"Ans-206", "Alle dine varer er blevet fjernet"},
-                {"Ans-207", "Denne vare hører ikke til dig"},
-                {"Ans-208", "Этот элемент вам не принадлежит"},
+                {"Ans-207", "Elementet blev slettet"},
+                {"Ans-208", "Denne vare hører ikke til dig"},
                 {"Ans-209", "Elementet blev tilføjet med succes"},
 
                 {"Ans-101", "Der er ingen forbindelse til serveren"},

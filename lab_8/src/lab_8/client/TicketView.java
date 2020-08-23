@@ -12,8 +12,6 @@ import static java.lang.Math.*;
  * Содержит данные, необходимые для отображения билета в таблице и графическом поле
  */
 public class TicketView {
-    private static double x_min = 10000000, y_min = 10000000,
-            x_max = -10000000, y_max = -10000000;
     private Color color;
     private double r, x, y, r_new, x_new, y_new,
             x_last, y_last, v, t_last, t_last_r;
@@ -31,11 +29,11 @@ public class TicketView {
     public void update(long now) {
         double t = ((double) now) / 1000000000;
         if (sqrt(pow(x_new - x, 2) + pow(y_new - y, 2)) > 2) {
-            double alpha = atan((y_new - y_last) / (x_new - x_last)),
+            final double alpha = atan((y_new - y_last) / (x_new - x_last)),
                     x_new_n = x_new * cos(alpha) + y_new * sin(alpha),
                     x_last_n = x_last * cos(alpha) + y_last * sin(alpha),
                     y_last_n = y_last * cos(alpha) - x_last * sin(alpha),
-                    g = 15;
+                    g = 20;
             if (v == 0) {
                 v = signum(x_new_n - x_last_n) * sqrt(g * abs(x_new_n - x_last_n) / 2);
                 t_last = t;
@@ -57,10 +55,6 @@ public class TicketView {
         } else
             r = r_new;
         t_last_r = t;
-
-        x_new = Double.parseDouble(ticketX.get());
-        y_new = Double.parseDouble(ticketY.get());
-        r_new = log1p(Double.parseDouble(ticketPrice.get()));
     }
 
     /**
@@ -70,7 +64,9 @@ public class TicketView {
      */
     public void draw(GraphicsContext gc) {
         gc.setFill(color);
-        gc.fillOval(x - x_min - r, y - y_min - r, 2 * r, 2 * r);
+        gc.fillOval(x - r + gc.getCanvas().getWidth() / 2,
+                y - r + gc.getCanvas().getHeight() / 2,
+                2 * r, 2 * r);
     }
 
     public void setColor(Color color) {
@@ -90,8 +86,10 @@ public class TicketView {
         eventType = new SimpleStringProperty(all.get(9));
         eventDate = new SimpleStringProperty(all.get(10));
 
-        x_last = x = Double.parseDouble(ticketX.get());
-        y_last = y = Double.parseDouble(ticketY.get());
+        double i = Double.parseDouble(ticketX.get()),
+                j = Double.parseDouble(ticketY.get());
+        x_new = x_last = x = signum(i) * log10(1 + abs(i)) * 50;
+        y_new = y_last = y = -signum(j) * log10(1 + abs(j)) * 20;
         r = r_new = log1p(Double.parseDouble(ticketPrice.get()));
     }
 
@@ -168,7 +166,8 @@ public class TicketView {
         this.ticketX.set(ticketX);
         x_last = x;
         y_last = y;
-        x_new = Double.parseDouble(this.ticketX.get());
+        double i = Double.parseDouble(this.ticketX.get());
+        x_new = signum(i) * log10(1 + abs(i)) * 50;
         v = 0;
     }
 
@@ -180,7 +179,8 @@ public class TicketView {
         this.ticketY.set(ticketY);
         x_last = x;
         y_last = y;
-        y_new = Double.parseDouble(this.ticketY.get());
+        double j = Double.parseDouble(this.ticketY.get());
+        y_new = -signum(j) * log10(1 + abs(j)) * 20;
         v = 0;
     }
 
@@ -198,21 +198,5 @@ public class TicketView {
 
     public double getR() {
         return r;
-    }
-
-    public static double getX_min() {
-        return x_min;
-    }
-
-    public static double getY_min() {
-        return y_min;
-    }
-
-    public static void setX_min(double x_min) {
-        TicketView.x_min = x_min;
-    }
-
-    public static void setY_min(double y_min) {
-        TicketView.y_min = y_min;
     }
 }
