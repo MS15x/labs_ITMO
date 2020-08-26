@@ -1,5 +1,6 @@
-package lab_8.client;
+package lab_8.client.service;
 
+import lab_8.client.ClientMain;
 import lab_8.common.AllCommands;
 import lab_8.common.CommandConverter;
 import lab_8.common.ServerCommand;
@@ -24,7 +25,7 @@ public abstract class ClientConnection {
      */
     public static ServerCommand connect(ServerCommand command) {
         try {
-            int port = 1444;
+            int port = 1445;
             String hostname = "localhost";
             SocketAddress address = new InetSocketAddress(hostname, port);
             socket = new DatagramSocket();

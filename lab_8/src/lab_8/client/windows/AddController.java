@@ -3,13 +3,13 @@ package lab_8.client.windows;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import lab_8.client.Check;
-import lab_8.client.ClientConnection;
-import lab_8.client.ResourceFactory;
+import lab_8.client.service.Check;
+import lab_8.client.service.ClientConnection;
+import lab_8.client.service.ResourceFactory;
 import lab_8.common.AllCommands;
 import lab_8.common.ServerCommand;
-import lab_8.common.ticket.EventType;
-import lab_8.common.ticket.TicketType;
+import lab_8.server.ticket.EventType;
+import lab_8.server.ticket.TicketType;
 
 import java.util.Locale;
 import java.util.ResourceBundle;

@@ -5,8 +5,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-import lab_8.client.ClientIdentification;
-import lab_8.client.ResourceFactory;
+import lab_8.client.service.ClientIdentification;
+import lab_8.client.service.ResourceFactory;
 import lab_8.common.ServerCommand;
 
 import java.util.Locale;

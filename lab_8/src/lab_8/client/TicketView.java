@@ -4,7 +4,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import static java.lang.Math.*;
 
@@ -20,6 +22,7 @@ public class TicketView {
     private SimpleStringProperty userName, ticketDate,
             ticketName, ticketX, ticketY, ticketPrice,
             ticketType, eventName, eventType, eventDate;
+    private static HashMap<String, Color> colors = new HashMap<>();
 
     /**
      * Обновление данных, необходимых для прорисовки элемента на канве
@@ -60,17 +63,13 @@ public class TicketView {
     /**
      * Отрисовка элемента на канве
      *
-     * @param gc GraphicsContext канвы
+     * @param gc      GraphicsContext канвы
+     * @param delta_x смещение элемента по x
+     * @param delta_y смещение элемента по y
      */
-    public void draw(GraphicsContext gc) {
+    public void draw(GraphicsContext gc, double delta_x, double delta_y) {
         gc.setFill(color);
-        gc.fillOval(x - r + gc.getCanvas().getWidth() / 2,
-                y - r + gc.getCanvas().getHeight() / 2,
-                2 * r, 2 * r);
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
+        gc.fillOval(x - r + delta_x, y - r + delta_y, 2 * r, 2 * r);
     }
 
     public TicketView(List<String> all) {
@@ -85,12 +84,20 @@ public class TicketView {
         eventName = new SimpleStringProperty(all.get(8));
         eventType = new SimpleStringProperty(all.get(9));
         eventDate = new SimpleStringProperty(all.get(10));
+        if (!colors.containsKey(userName.get()))
+            colors.put(userName.get(), random_color());
+        this.color = colors.get(userName.get());
 
         double i = Double.parseDouble(ticketX.get()),
                 j = Double.parseDouble(ticketY.get());
         x_new = x_last = x = signum(i) * log10(1 + abs(i)) * 50;
         y_new = y_last = y = -signum(j) * log10(1 + abs(j)) * 20;
         r = r_new = log1p(Double.parseDouble(ticketPrice.get()));
+    }
+
+    private Color random_color() {
+        Random rand = new Random();
+        return Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
     }
 
     public String getId() {

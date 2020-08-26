@@ -1,4 +1,4 @@
-package lab_8.client;
+package lab_8.client.service;
 
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;

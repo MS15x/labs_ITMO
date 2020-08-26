@@ -2,7 +2,7 @@ package lab_8.server.main;
 
 import lab_8.server.service.Database;
 import lab_8.server.service.ThreadInfo;
-import lab_8.common.ticket.Ticket;
+import lab_8.server.ticket.Ticket;
 
 import java.io.*;
 import java.net.*;
@@ -36,7 +36,7 @@ public class Server {
             try {
                 port = Integer.parseInt(args[0]);
             } catch (Exception e) {
-                port = 1444;
+                port = 1445;
             }
             SocketAddress address = new InetSocketAddress(port);
             HashMap<String, SocketAddress> allAddresses = new HashMap<>();

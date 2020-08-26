@@ -1,10 +1,10 @@
 package lab_8.server.service;
 
-import lab_8.common.ticket.EventType;
-import lab_8.common.ticket.TicketType;
-import lab_8.common.ticket.Coordinates;
-import lab_8.common.ticket.Event;
-import lab_8.common.ticket.Ticket;
+import lab_8.server.ticket.EventType;
+import lab_8.server.ticket.TicketType;
+import lab_8.server.ticket.Coordinates;
+import lab_8.server.ticket.Event;
+import lab_8.server.ticket.Ticket;
 
 import java.sql.*;
 import java.time.ZoneId;

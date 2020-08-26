@@ -1,7 +1,7 @@
 package lab_8.server.main;
 
 import lab_8.common.*;
-import lab_8.common.ticket.*;
+import lab_8.server.ticket.*;
 import lab_8.server.service.Database;
 
 import java.time.LocalDate;

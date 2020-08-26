@@ -1,4 +1,4 @@
-package lab_8.common.ticket;
+package lab_8.server.ticket;
 
 import java.time.ZonedDateTime;
 

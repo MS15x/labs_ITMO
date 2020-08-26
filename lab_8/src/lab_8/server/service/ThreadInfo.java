@@ -1,13 +1,12 @@
 package lab_8.server.service;
 
-import lab_8.common.ticket.Ticket;
+import lab_8.server.ticket.Ticket;
 
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * класс для хранения служебной информации для потоков

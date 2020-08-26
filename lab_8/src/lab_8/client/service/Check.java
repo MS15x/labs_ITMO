@@ -1,4 +1,4 @@
-package lab_8.client;
+package lab_8.client.service;
 
 /**
  * Класс реализует проверку чисел на соответствие типу

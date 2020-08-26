@@ -44,10 +44,11 @@
                                     <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
                                     <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
                                     <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
+                           <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                 <Button fx:id="delete_button" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#deleteButtonClick" text="Удалить" textAlignment="CENTER" GridPane.rowIndex="1" />
                                 <Button fx:id="add_button" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#addButtonClick" text="Создать" textAlignment="CENTER" />
-                                <ComboBox fx:id="language_box" promptText="Русский" value="Русский" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+                                <ComboBox fx:id="language_box" promptText="Русский" value="Русский" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
                                 <Button fx:id="clear_button" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clearButtonClick" text="Очистить" textAlignment="CENTER" GridPane.rowIndex="2" />
                             </GridPane>
                         </children>

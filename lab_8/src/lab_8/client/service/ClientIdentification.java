@@ -1,4 +1,4 @@
-package lab_8.client;
+package lab_8.client.service;
 
 import lab_8.common.AllCommands;
 import lab_8.common.ServerCommand;
