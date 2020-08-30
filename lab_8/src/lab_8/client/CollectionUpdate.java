@@ -40,9 +40,11 @@ public class CollectionUpdate {
      */
     public void update(ServerCommand command, boolean connect) {
         ServerCommand answer = connect ? ClientConnection.connect(command) : command;
+        if (!answer.getResult())
+            return;
         ArrayList<String> serverInfo = answer.getInformation();
-        if (serverInfo.get(0) != null && !serverInfo.get(0).equals(""))
-            info_label.textProperty().bind(rf.get(serverInfo.get(0)));
+        //if (serverInfo.get(0) != null && !serverInfo.get(0).equals(""))
+        //  info_label.textProperty().bind(rf.get(serverInfo.get(0)));
         serverInfo.remove(0);
 
         switch (answer.getCommand()) {

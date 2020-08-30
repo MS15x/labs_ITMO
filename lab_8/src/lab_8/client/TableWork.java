@@ -94,7 +94,7 @@ public class TableWork {
             if (!param.getValue().getEventDate().equals("")) {
                 ZonedDateTime time = ZonedDateTime.parse(param.getValue().getEventDate());
                 time = time.withZoneSameInstant(ZoneId.of(rf.getString("time")));
-                return new SimpleObjectProperty<>(time.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL)));
+                return new SimpleObjectProperty<>(time.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)));
             } else return new SimpleObjectProperty<>("");
         });
     }

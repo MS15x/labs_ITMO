@@ -51,15 +51,6 @@ public class ServerCommand implements Serializable {
         this.information = information;
     }
 
-    /**
-     * Добавляет в команду информацию
-     *
-     * @param information информация
-     */
-    public void addInformation(String... information) {
-        this.information.addAll(Arrays.asList(information));
-    }
-
     public void setUser(String user) {
         this.user = user;
     }
@@ -89,7 +80,7 @@ public class ServerCommand implements Serializable {
     }
 
     public ServerCommand toAll() {
-        if (command != AllCommands.add)
+        //if (command != AllCommands.add)
             information.set(0, null);
         return this;
     }

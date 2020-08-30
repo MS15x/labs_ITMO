@@ -12,8 +12,11 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.io.IOException;
 
@@ -31,7 +34,7 @@ public class MainController {
     private ObservableList<TicketView> tickets = FXCollections.observableArrayList();
 
     @FXML
-    private Button clear_button, delete_button, add_button;
+    private Button clear_button, delete_button, add_button, script_button;
     @FXML
     private Spinner<Double> zoom_spinner;
     @FXML
@@ -47,6 +50,62 @@ public class MainController {
     private ResourceFactory rf;
     private CollectionUpdate collectionUpdate;
 
+    private static Stack<Scanner> files = new Stack<>();
+    private static Stack<String> addresses = new Stack<>();
+
+    @FXML
+    private void scriptButton() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Открыть скрипт");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("JAVA", "*.java"),
+                new FileChooser.ExtensionFilter("TXT", "*.txt")
+        );
+        File file = fileChooser.showOpenDialog(ticket_table.getScene().getWindow());
+        if (file != null)
+            execute(file.getAbsolutePath());
+    }
+
+    private void execute(String address) {
+        try {
+            Scanner s = new Scanner(new File(address));
+            if (!addresses.contains(address)) {
+                addresses.push(address);
+                files.push(s);
+                Scanner file_scanner = files.peek();
+                String[] commands;
+                while (file_scanner.hasNextLine()) {
+                    commands = file_scanner.nextLine().trim().replaceAll(" {2,}", " ").toLowerCase().split(" ");
+                    try {
+                        switch (AllCommands.valueOf(commands[0])) {
+                            case clear:
+                                collectionUpdate.update(new ServerCommand(AllCommands.clear), true);
+                                break;
+                            case add:
+                                collectionUpdate.update(new ServerCommand(AllCommands.add,
+                                        commands[1], commands[2], commands[3],
+                                        commands[4], commands[5], "", "", ""), true);
+                                break;
+                            case execute_script:
+                                execute(commands[1]);
+                                break;
+                            case remove_by_id:
+                                collectionUpdate.update(new ServerCommand(AllCommands.remove_by_id, commands[1]), true);
+                                break;
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+                addresses.pop();
+                files.pop();
+            } else
+                info_label.setText("Вы не можете циклически открывать одни и теже скрипты");
+        } catch (FileNotFoundException e) {
+            //System.out.println("Не удалось найти или открыть файл\n");
+        } catch (Exception e) {
+            //System.out.println("Команды в файле " + address + " некорректны\n");
+        }
+    }
 
     @FXML
     private void addButtonClick() throws IOException {
@@ -108,7 +167,7 @@ public class MainController {
                 ae -> {
                     ServerCommand command = ClientConnection.receive(true);
                     if (command != null)
-                        collectionUpdate.update(command,false);
+                        collectionUpdate.update(command, false);
                 }));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();

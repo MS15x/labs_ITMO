@@ -48,6 +48,8 @@ public abstract class ServerAnswers {
 
     private static ServerCommand add_(ArrayList<Ticket> tickets, ArrayList<String> inf, String user) {
         Ticket ticket = add_basic(inf, user);
+        if (ticket == null)
+            return new ServerCommand(AllCommands.add, false);
         tickets.add(ticket);
         ArrayList<String> answerinf = new ArrayList<>(Arrays.asList("Ans-209", String.valueOf(ticket.getId()),
                 ticket.getUser(),
@@ -118,7 +120,7 @@ public abstract class ServerAnswers {
                         answerinf.addAll(Arrays.asList("2", String.valueOf(ticket.getCreationDate())));
                         break;
                     case 3:
-                        if(inf.get(2).equals(""))
+                        if (inf.get(2).equals(""))
                             throw new Exception();
                         ticket.setName(inf.get(2));
                         answerinf.addAll(Arrays.asList("3", ticket.getName()));
@@ -168,20 +170,24 @@ public abstract class ServerAnswers {
             else
                 throw new Exception();
         } catch (Exception e) {
-            return new ServerCommand(AllCommands.service, false,"Данные введены некоректно, элемент не был изменён");
+            return new ServerCommand(AllCommands.service, false, "Данные введены некоректно, элемент не был изменён");
         }
         return new ServerCommand(AllCommands.update, true, answerinf);
     }
 
     private static Ticket add_basic(ArrayList<String> inf, String user) {
-        return new Ticket(inf.get(0),
-                LocalDate.parse(inf.get(1)),
-                new Coordinates(Float.parseFloat(inf.get(2)),
-                        Long.parseLong(inf.get(3))),
-                Integer.parseInt(inf.get(4)),
-                inf.get(5).isEmpty() ? null : TicketType.valueOf(inf.get(5)),
-                inf.get(6).isEmpty() ? null : new Event(inf.get(6),
-                        inf.get(7).isEmpty() ? null : EventType.valueOf(inf.get(7))),
-                user);
+        try {
+            return new Ticket(inf.get(0),
+                    LocalDate.parse(inf.get(1)),
+                    new Coordinates(Float.parseFloat(inf.get(2)),
+                            Long.parseLong(inf.get(3))),
+                    Integer.parseInt(inf.get(4)),
+                    inf.get(5).isEmpty() ? null : TicketType.valueOf(inf.get(5)),
+                    inf.get(6).isEmpty() ? null : new Event(inf.get(6),
+                            inf.get(7).isEmpty() ? null : EventType.valueOf(inf.get(7))),
+                    user);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

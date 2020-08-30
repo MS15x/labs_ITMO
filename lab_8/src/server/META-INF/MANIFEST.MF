@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: lab_8.server.main.Server
-Class-Path: postgresql-42.2.5.jar
-
